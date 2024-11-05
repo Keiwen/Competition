@@ -1,0 +1,17 @@
+{
+    "name": "keiwen/competition",
+    "type": "library",
+    "description": "Competition management",
+	"version": "1.0",
+    "autoload": {
+        "psr-4": {
+            "Keiwen\\Competition\\": ""
+        }
+    },
+	"require": {
+        "php": ">=8.0",
+        "ext-json": "*",
+
+        "keiwen/utils": ">=2.16"
+    }
+}
