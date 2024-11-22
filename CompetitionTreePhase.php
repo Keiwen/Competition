@@ -269,42 +269,86 @@ class CompetitionTreePhase
     }
 
 
-
     /**
+     * By default, you will have all players from 1st group, then all players for 2nd group, ...
+     * @param bool $byRank set true to have all 1st players form all groups, then all 2nd players from all groups, ...
+     * @param bool $phaseRanked set true to mix all rankings across any group and re-order accordingly
      * @return int[]|string[]
      */
-    public function getPlayerKeysForQualification(): array
+    public function getPlayerKeysForQualification(bool $byRank = false, bool $phaseRanked = false): array
     {
         $playerKeys = array();
         foreach ($this->groups as $group) {
             $groupQualification = $group->getPlayerKeysForQualification();
             $playerKeys = array_merge($playerKeys, $groupQualification);
         }
+
+        if ($phaseRanked) {
+            try {
+                $rankings = $this->getMixedRankingsForKeys($playerKeys);
+                $playerKeys = array();
+                foreach ($rankings as $ranking) {
+                    $playerKeys[] = $ranking->getEntityKey();
+                }
+            } catch (CompetitionRankingException $e) {
+                // cancel mix rankings if issue with it
+            }
+        }
         return $playerKeys;
     }
 
     /**
+     * By default, you will have all players from 1st group, then all players for 2nd group, ...
+     * @param bool $byRank set true to have all 1st players form all groups, then all 2nd players from all groups, ...
+     * @param bool $phaseRanked set true to mix all rankings across any group and re-order accordingly
      * @return int[]|string[]
      */
-    public function getPlayerKeysForStagnation(): array
+    public function getPlayerKeysForStagnation(bool $byRank = false, bool $phaseRanked = false): array
     {
         $playerKeys = array();
         foreach ($this->groups as $group) {
             $groupStagnation = $group->getPlayerKeysForStagnation();
             $playerKeys = array_merge($playerKeys, $groupStagnation);
         }
+
+        if ($phaseRanked) {
+            try {
+                $rankings = $this->getMixedRankingsForKeys($playerKeys);
+                $playerKeys = array();
+                foreach ($rankings as $ranking) {
+                    $playerKeys[] = $ranking->getEntityKey();
+                }
+            } catch (CompetitionRankingException $e) {
+                // cancel mix rankings if issue with it
+            }
+        }
         return $playerKeys;
     }
 
     /**
+     * By default, you will have all players from 1st group, then all players for 2nd group, ...
+     * @param bool $byRank set true to have all 1st players form all groups, then all 2nd players from all groups, ...
+     * @param bool $phaseRanked set true to mix all rankings across any group and re-order accordingly
      * @return int[]|string[]
      */
-    public function getPlayerKeysForElimination(): array
+    public function getPlayerKeysForElimination(bool $byRank = false, bool $phaseRanked = false): array
     {
         $playerKeys = array();
         foreach ($this->groups as $group) {
             $groupElimination = $group->getPlayerKeysForElimination();
             $playerKeys = array_merge($playerKeys, $groupElimination);
+        }
+
+        if ($phaseRanked) {
+            try {
+                $rankings = $this->getMixedRankingsForKeys($playerKeys);
+                $playerKeys = array();
+                foreach ($rankings as $ranking) {
+                    $playerKeys[] = $ranking->getEntityKey();
+                }
+            } catch (CompetitionRankingException $e) {
+                // cancel mix rankings if issue with it
+            }
         }
         return $playerKeys;
     }
