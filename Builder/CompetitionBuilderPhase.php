@@ -187,10 +187,7 @@ class CompetitionBuilderPhase
     {
         $sum = 0;
         foreach ($this->getGroups() as $group) {
-            $groupFQCN = CompetitionBuilder::getFQCNlassForType($group->getType());
-            if (method_exists($groupFQCN, 'getMinPlayerCount')) {
-                $sum += (int) ($groupFQCN)::getMinPlayerCount();
-            }
+            $sum += $group->getMinPlayersRequired();
         }
         return $sum;
     }
