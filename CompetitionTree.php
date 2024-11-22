@@ -214,15 +214,30 @@ class CompetitionTree
                 // no specific phase found, we should use list of unused players
                 $packKeys = array_keys($this->unusedPlayers);
             } else {
+                // set parameters according to pickup method
+                $pickupByRank = false;
+                $pickupPhaseRanked = false;
+                switch ($selector->getPickupMethod()) {
+                    case CompetitionPlayerSelector::PICKUP_METHOD_BYRANKINGROUP:
+                        $pickupByRank = true;
+                        break;
+                    case CompetitionPlayerSelector::PICKUP_METHOD_BYRANKINPHASE:
+                        $pickupPhaseRanked = true;
+                        break;
+                    case CompetitionPlayerSelector::PICKUP_METHOD_BYGROUP:
+                    default:
+                        // don't change it's OK
+                }
+
                 // get a pack
                 switch ($selector->getPlayerPackName()) {
                     case CompetitionBuilderTree::PLAYER_PACK_QUALIFIED:
                         // players in qualification spot for given phase
-                        $packKeys = $phase->getPlayerKeysForQualification();
+                        $packKeys = $phase->getPlayerKeysForQualification($pickupByRank, $pickupPhaseRanked);
                         break;
                     case CompetitionBuilderTree::PLAYER_PACK_STAGNATION:
                         // players in stagnation spot (neither qualified nor eliminated) for given phase
-                        $packKeys = $phase->getPlayerKeysForStagnation();
+                        $packKeys = $phase->getPlayerKeysForStagnation($pickupByRank, $pickupPhaseRanked);
                         break;
                     case CompetitionBuilderTree::PLAYER_PACK_UNUSED:
                         // players that did not participate in any phase yet
@@ -230,12 +245,10 @@ class CompetitionTree
                         break;
                     default:
                         // combination of unused players and previously qualified players
-                        $packKeys = array_merge(array_keys($this->unusedPlayers), $phase->getPlayerKeysForQualification());
+                        $packKeys = array_merge(array_keys($this->unusedPlayers), $phase->getPlayerKeysForQualification($pickupByRank, $pickupPhaseRanked));
                         break;
                 }
             }
-
-            // TODO use pickup method
 
             // if selection limit given, slice in keys received
             // if start is too high, note that nothing is returned
