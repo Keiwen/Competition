@@ -793,7 +793,17 @@ abstract class AbstractCompetition
      */
     public function getTeamRankings(): array
     {
-        return $this->rankingsHolder->getTeamRankings($this->teamComp);
+        // Do not use raw team comp
+        // While in a tree, this is only a group in a phase, we may not have all teams in there
+        // Filter to only keep teams that have players here
+        $inGroupComp = array();
+        foreach ($this->teamComp as $teamKey => $playerKeys) {
+            if ($this->isTeamHavePlayers($teamKey)) {
+                $inGroupComp[$teamKey] = $playerKeys;
+            }
+        }
+
+        return $this->rankingsHolder->getTeamRankings($inGroupComp);
     }
 
     /**
@@ -1081,5 +1091,21 @@ abstract class AbstractCompetition
         return $newCompetition;
     }
 
+
+    /**
+     * This method allow to check if a team have player in current competition
+     * This could be useful while in a tree, a team composition is on tree level
+     * This object is therefore a given group in a given phase and may not include all teams
+     * @param int|string $teamKey
+     * @return bool
+     */
+    public function isTeamHavePlayers($teamKey): bool
+    {
+        $playersInTeam = $this->getPlayerKeysInTeam($teamKey);
+        foreach ($playersInTeam as $playerKey) {
+            if (isset($this->players[$playerKey])) return true;
+        }
+        return false;
+    }
 
 }
