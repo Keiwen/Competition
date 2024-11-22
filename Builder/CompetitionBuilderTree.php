@@ -118,4 +118,17 @@ class CompetitionBuilderTree
         return max($minPlayersInPhase);
     }
 
+
+    /**
+     * @return string[]
+     */
+    public static function getPlayerPacks(): array
+    {
+        return [
+            static::PLAYER_PACK_UNUSED,
+            static::PLAYER_PACK_QUALIFIED,
+            static::PLAYER_PACK_STAGNATION,
+        ];
+    }
+
 }
