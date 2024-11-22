@@ -4,6 +4,7 @@ namespace Keiwen\Competition;
 
 use Keiwen\Competition\Builder\CompetitionBuilderTree;
 use Keiwen\Competition\Builder\CompetitionBuilderPhase;
+use Keiwen\Competition\Builder\CompetitionPlayerSelector;
 use Keiwen\Competition\Exception\CompetitionPlayerCountException;
 use Keiwen\Competition\Exception\CompetitionRankingException;
 use Keiwen\Competition\Ranking\AbstractRanking;
@@ -196,16 +197,15 @@ class CompetitionTree
 
         $selectors = $builderPhase->getPlayerSelectors();
         // if no selectors given, set a default empty selector
-        if (empty($selectors)) $selectors = array(array());
+        if (empty($selectors)) $selectors = array(new CompetitionPlayerSelector());
 
         foreach ($selectors as $selector) {
             // get base phase
             $phase = null;
-            if (isset($selector['phase'])) {
-                // if specified, get phase with given name
-                $phase = $this->getPhase($selector['phase']);
-            } else if ($this->lastPhaseNameCompleted !== null) {
-                // else get the last phase completed
+            // try to get phase with given name
+            $phase = $this->getPhase($selector->getPhaseName());
+            if (empty($phase && $this->lastPhaseNameCompleted !== null)) {
+                // if not found, try to get last phase completed
                 $phase = $this->getPhase($this->lastPhaseNameCompleted);
             }
 
@@ -215,8 +215,7 @@ class CompetitionTree
                 $packKeys = array_keys($this->unusedPlayers);
             } else {
                 // get a pack
-                $playerPack = $selector['pack'] ?? '';
-                switch ($playerPack) {
+                switch ($selector->getPlayerPackName()) {
                     case CompetitionBuilderTree::PLAYER_PACK_QUALIFIED:
                         // players in qualification spot for given phase
                         $packKeys = $phase->getPlayerKeysForQualification();
@@ -236,23 +235,12 @@ class CompetitionTree
                 }
             }
 
-            // if seed range given, limit seed selected
-            if (!empty($selector['seedRange'])) {
-                // if more seed required than players in pack, set no limit
-                if ($selector['seedRange'][1] > count($packKeys)) $selector['seedRange'][1] = -1;
-                $seedCount = null;
-                // if range too wide, set no limit
-                if ($selector['seedRange'][1] !== -1) {
-                    $seedCount = $selector['seedRange'][1] - $selector['seedRange'][0];
-                    if ($seedCount > count($packKeys)) {
-                        $selector['seedRange'][1] = -1;
-                        $seedCount = null;
-                    }
-                }
+            // TODO use pickup method
 
-                // then slice in keys (if start too high, nothing is returned)
-                $selectedKeys = array_slice($packKeys, $selector['seedRange'][0], $seedCount);
-
+            // if selection limit given, slice in keys received
+            // if start is too high, note that nothing is returned
+            if (($selector->getStartPickAtRank() !== 1) || ($selector->setSelectionLength() !== null)) {
+                $selectedKeys = array_slice($packKeys, $selector->getStartPickAtRank(), $selector->getSelectionLength());
             } else {
                 $selectedKeys = $packKeys;
             }

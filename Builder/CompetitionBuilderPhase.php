@@ -16,6 +16,7 @@ class CompetitionBuilderPhase
     protected $dispatchMethod = '';
     /** @var CompetitionBuilder[] */
     protected $builderGroups = array();
+    /** @var CompetitionPlayerSelector[] $playerSelectorsInTree */
     protected $playerSelectorsInTree = array();
 
     const DISPATCH_METHOD_DEAL = 'deal';
@@ -108,6 +109,9 @@ class CompetitionBuilderPhase
     }
 
 
+    /**
+     * @return CompetitionPlayerSelector[]
+     */
     public function getPlayerSelectors(): array
     {
         return $this->playerSelectorsInTree;
@@ -121,27 +125,11 @@ class CompetitionBuilderPhase
     }
 
     /**
-     * Add a selector so that players can be selected, from the parent tree, to start the phase
-     * @param string $phaseName optional: a specific phase name. If empty, take the previous phase. If no previous phase, consider the unused list of player in tree (all players for first phase)
-     * @param string $playerPackName optional: see CompetitionBuilderTree::PLAYER_PACK_* constants. If empty, take unused + qualified of given phase. Always exclude players marked as eliminated in previous phase
-     * @param array $seedRange optional: give start and end or range of seed to include. By default, array(1; -1) is used, including all seeds as -1 indicates no limit
+     * @param CompetitionPlayerSelector $selector
      * @return $this
      */
-    public function addPlayerSelector(string $phaseName = '', string $playerPackName = '', array $seedRange = array()): self
+    public function addPlayerSelector(CompetitionPlayerSelector $selector): self
     {
-        $selector = array();
-        if (!empty($phaseName)) $selector['phase'] = $phaseName;
-        if (!empty($playerPackName)) $selector['pack'] = $playerPackName;
-        if (!empty($seedRange)) {
-            if (count($seedRange) === 2 && is_int($seedRange[0]) &&  is_int($seedRange[1])) {
-                // check that starting seed is >= 1
-                if ($seedRange[0] < 1) $seedRange[0] = 1;
-                // check that ending seed is > starting except if -1
-                if ($seedRange[1] !== -1 && $seedRange[1] < $seedRange[0]) $seedRange[1] = -1;
-
-                $selector['seedRange'] = $seedRange;
-            }
-        }
         $this->playerSelectorsInTree[] = $selector;
         return $this;
     }
