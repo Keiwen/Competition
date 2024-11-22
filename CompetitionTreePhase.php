@@ -277,24 +277,7 @@ class CompetitionTreePhase
      */
     public function getPlayerKeysForQualification(bool $byRank = false, bool $phaseRanked = false): array
     {
-        $playerKeys = array();
-        foreach ($this->groups as $group) {
-            $groupQualification = $group->getPlayerKeysForQualification();
-            $playerKeys = array_merge($playerKeys, $groupQualification);
-        }
-
-        if ($phaseRanked) {
-            try {
-                $rankings = $this->getMixedRankingsForKeys($playerKeys);
-                $playerKeys = array();
-                foreach ($rankings as $ranking) {
-                    $playerKeys[] = $ranking->getEntityKey();
-                }
-            } catch (CompetitionRankingException $e) {
-                // cancel mix rankings if issue with it
-            }
-        }
-        return $playerKeys;
+        return $this->getPlayerKeysForSpot('qualification', $byRank, $phaseRanked);
     }
 
     /**
@@ -305,24 +288,7 @@ class CompetitionTreePhase
      */
     public function getPlayerKeysForStagnation(bool $byRank = false, bool $phaseRanked = false): array
     {
-        $playerKeys = array();
-        foreach ($this->groups as $group) {
-            $groupStagnation = $group->getPlayerKeysForStagnation();
-            $playerKeys = array_merge($playerKeys, $groupStagnation);
-        }
-
-        if ($phaseRanked) {
-            try {
-                $rankings = $this->getMixedRankingsForKeys($playerKeys);
-                $playerKeys = array();
-                foreach ($rankings as $ranking) {
-                    $playerKeys[] = $ranking->getEntityKey();
-                }
-            } catch (CompetitionRankingException $e) {
-                // cancel mix rankings if issue with it
-            }
-        }
-        return $playerKeys;
+        return $this->getPlayerKeysForSpot('stagnation', $byRank, $phaseRanked);
     }
 
     /**
@@ -333,13 +299,50 @@ class CompetitionTreePhase
      */
     public function getPlayerKeysForElimination(bool $byRank = false, bool $phaseRanked = false): array
     {
+        return $this->getPlayerKeysForSpot('elimination', $byRank, $phaseRanked);
+    }
+
+
+    /**
+     * @param string $spotType
+     * @param bool $byRank
+     * @param bool $phaseRanked
+     * @return int[]|string[]
+     */
+    protected function getPlayerKeysForSpot(string $spotType, bool $byRank = false, bool $phaseRanked = false): array
+    {
         $playerKeys = array();
+        $playerKeysByRank = array();
         foreach ($this->groups as $group) {
-            $groupElimination = $group->getPlayerKeysForElimination();
-            $playerKeys = array_merge($playerKeys, $groupElimination);
+
+            // get corresponding player in matching spot for a group
+            switch ($spotType) {
+                case 'qualification': $groupSpots = $group->getPlayerKeysForQualification(); break;
+                case 'stagnation': $groupSpots = $group->getPlayerKeysForStagnation(); break;
+                case 'elimination': $groupSpots = $group->getPlayerKeysForElimination(); break;
+            }
+
+            if ($byRank) {
+                // store each in a given rank (we do not care about actual rank value though)
+                foreach ($groupSpots as $index => $playerKey) {
+                    if (!isset($playerKeysByRank[$index])) $playerKeysByRank[$index] = array();
+                    $playerKeysByRank[$index][] = $playerKey;
+                }
+            } else {
+                // add player group by group
+                $playerKeys = array_merge($playerKeys, $groupSpots);
+            }
+        }
+
+        if ($byRank) {
+            // loop again on each rank and add rank by rank
+            foreach ($playerKeysByRank as $index => $keysInRank) {
+                $playerKeys = array_merge($playerKeys, $keysInRank);
+            }
         }
 
         if ($phaseRanked) {
+            // mix all rankings if possible
             try {
                 $rankings = $this->getMixedRankingsForKeys($playerKeys);
                 $playerKeys = array();
@@ -350,6 +353,7 @@ class CompetitionTreePhase
                 // cancel mix rankings if issue with it
             }
         }
+
         return $playerKeys;
     }
 
