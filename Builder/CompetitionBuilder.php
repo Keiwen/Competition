@@ -592,4 +592,13 @@ class CompetitionBuilder
     }
 
 
+    public function getMinPlayersRequired(): int
+    {
+        $count = 0;
+        if (method_exists($this->typeFQCNlass, 'getMinPlayerCount')) {
+            $count = (int) ($this->typeFQCNlass)::getMinPlayerCount();
+        }
+        return $count;
+    }
+
 }
