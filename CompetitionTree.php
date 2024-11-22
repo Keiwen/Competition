@@ -50,7 +50,7 @@ class CompetitionTree
     public function getName(): string
     {
         if (empty($this->iterationName)) return $this->builderTree->getName();
-        return $this->builderTree->getName() . ' CompetitionTree.php' . $this->iterationName;
+        return $this->builderTree->getName() . ' ' . $this->iterationName;
     }
 
     public function getIterationName(): string
