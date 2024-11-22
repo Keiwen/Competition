@@ -18,14 +18,14 @@ class CompetitionBuilderPhase
     protected $builderGroups = array();
     protected $playerSelectorsInTree = array();
 
-    const DISPATCH_METHOD_NONE = '';
+    const DISPATCH_METHOD_DEAL = 'deal';
     const DISPATCH_METHOD_RANDOM = 'random';
 
 
     public function __construct(string $name, string $dispatchMethod = '')
     {
         $this->name = $name;
-        if (!in_array($dispatchMethod, static::getDispatchMethods())) $dispatchMethod = static::DISPATCH_METHOD_NONE;
+        if (!in_array($dispatchMethod, static::getDispatchMethods())) $dispatchMethod = static::DISPATCH_METHOD_DEAL;
         $this->dispatchMethod = $dispatchMethod;
     }
 
@@ -35,7 +35,7 @@ class CompetitionBuilderPhase
     public static function getDispatchMethods(): array
     {
         return array(
-            self::DISPATCH_METHOD_NONE,
+            self::DISPATCH_METHOD_DEAL,
             self::DISPATCH_METHOD_RANDOM,
         );
     }
@@ -101,19 +101,33 @@ class CompetitionBuilderPhase
         return $this->dispatchMethod;
     }
 
+    public function setDispatchMethod(string $dispatchMethod): self
+    {
+        if (in_array($dispatchMethod, static::getDispatchMethods())) $this->dispatchMethod = $dispatchMethod;
+        return $this;
+    }
+
 
     public function getPlayerSelectors(): array
     {
         return $this->playerSelectorsInTree;
     }
 
+
+    public function resetPlayerSelectors(): self
+    {
+        $this->playerSelectorsInTree = array();
+        return $this;
+    }
+
     /**
      * Add a selector so that players can be selected, from the parent tree, to start the phase
      * @param string $phaseName optional: a specific phase name. If empty, take the previous phase. If no previous phase, consider the unused list of player in tree (all players for first phase)
-     * @param string $playerPackName optional: see CompetitionTree::PLAYER_PACK_* constants. If empty, take unused + qualified of given phase. Always exclude players marked as eliminated in previous phase
+     * @param string $playerPackName optional: see CompetitionBuilderTree::PLAYER_PACK_* constants. If empty, take unused + qualified of given phase. Always exclude players marked as eliminated in previous phase
      * @param array $seedRange optional: give start and end or range of seed to include. By default, array(1; -1) is used, including all seeds as -1 indicates no limit
+     * @return $this
      */
-    public function addPlayerSelector(string $phaseName = '', string $playerPackName = '', array $seedRange = array())
+    public function addPlayerSelector(string $phaseName = '', string $playerPackName = '', array $seedRange = array()): self
     {
         $selector = array();
         if (!empty($phaseName)) $selector['phase'] = $phaseName;
@@ -129,6 +143,7 @@ class CompetitionBuilderPhase
             }
         }
         $this->playerSelectorsInTree[] = $selector;
+        return $this;
     }
 
 
@@ -168,7 +183,7 @@ class CompetitionBuilderPhase
         $dispatch = array();
         if ($this->dispatchMethod == static::DISPATCH_METHOD_RANDOM) $players = ArrayMutator::shufflePreservingKeys($players);
         switch ($this->dispatchMethod) {
-            case static::DISPATCH_METHOD_NONE:
+            case static::DISPATCH_METHOD_DEAL:
             case static::DISPATCH_METHOD_RANDOM:
             default:
                 $dispatch = ArrayMutator::deal($players, $groupCount);
