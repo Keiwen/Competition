@@ -14,7 +14,7 @@ class CompetitionPlayerSelector
     /** @var int $startPickAtRank */
     protected $startPickAtRank = 1;
     /** @var int $selectionLength */
-    protected $selectionLength = null;
+    protected $selectionLength = 0;
 
     CONST PICKUP_METHOD_BYGROUP = 'by_group';
     CONST PICKUP_METHOD_BYRANKINGROUP = 'by_rank_in_group';
@@ -126,21 +126,21 @@ class CompetitionPlayerSelector
     }
 
     /**
-     * @return int|null null will get all players
+     * @return int 0 will get all players
      */
-    public function getSelectionLength(): ?int
+    public function getSelectionLength(): int
     {
         return $this->selectionLength;
     }
 
     /**
-     * @param int|null $selectionLength null to get all players
+     * @param int $selectionLength 0 to get all players
      * @return $this
      */
-    public function setSelectionLength(int $selectionLength = null): self
+    public function setSelectionLength(int $selectionLength = 0): self
     {
-        // cannot have a length < 1 (except null)
-        if ($selectionLength < 1) $selectionLength = null;
+        // cannot have a length < 1 (except 0)
+        if ($selectionLength < 1) $selectionLength = 0;
         $this->selectionLength = $selectionLength;
         return $this;
     }
