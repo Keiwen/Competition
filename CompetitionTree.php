@@ -204,7 +204,7 @@ class CompetitionTree
             $phase = null;
             // try to get phase with given name
             $phase = $this->getPhase($selector->getPhaseName());
-            if (empty($phase && $this->lastPhaseNameCompleted !== null)) {
+            if (empty($phase) && $this->lastPhaseNameCompleted !== null) {
                 // if not found, try to get last phase completed
                 $phase = $this->getPhase($this->lastPhaseNameCompleted);
             }
@@ -252,8 +252,11 @@ class CompetitionTree
 
             // if selection limit given, slice in keys received
             // if start is too high, note that nothing is returned
-            if (($selector->getStartPickAtRank() !== 1) || ($selector->setSelectionLength() !== null)) {
-                $selectedKeys = array_slice($packKeys, $selector->getStartPickAtRank(), $selector->getSelectionLength());
+            if (($selector->getStartPickAtRank() !== 1) || ($selector->getSelectionLength() !== 0)) {
+                $selectionLength = $selector->getSelectionLength();
+                // if length = 0, convert to null for slice method
+                if ($selectionLength == 0) $selectionLength = null;
+                $selectedKeys = array_slice($packKeys, $selector->getStartPickAtRank() - 1, $selectionLength);
             } else {
                 $selectedKeys = $packKeys;
             }
