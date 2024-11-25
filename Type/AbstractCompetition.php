@@ -613,7 +613,7 @@ abstract class AbstractCompetition
             $playerKeys = array_values($playerKeys);
             $winnerKey = $game->getWinnerKey();
             // remove winner key from list
-            ArrayMutator::removeByValue($playerKeys, $winnerKey);
+            $playerKeys = (new ArrayMutator($playerKeys))->removeByValue($winnerKey);
             // create new array with winner key first
             $playerKeys = array_merge(array($winnerKey), $playerKeys);
 

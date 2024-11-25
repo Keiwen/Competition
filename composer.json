@@ -12,6 +12,6 @@
         "php": ">=8.0",
         "ext-json": "*",
 
-        "keiwen/utils": ">=2.16"
+        "keiwen/utils": ">=2.17"
     }
 }

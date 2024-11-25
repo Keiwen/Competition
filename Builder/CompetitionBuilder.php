@@ -392,7 +392,7 @@ class CompetitionBuilder
     {
 
         if ($this->getOptionValue(self::OPTION_SHUFFLE_PLAYER)) {
-            $playersList = ArrayMutator::shufflePreservingKeys($playersList);
+            $playersList = (new ArrayMutator($playersList))->shufflePreservingKeys();
         }
 
         // setup competition object

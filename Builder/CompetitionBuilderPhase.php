@@ -169,12 +169,13 @@ class CompetitionBuilderPhase
     {
         $groupCount = count($this->builderGroups);
         $dispatch = array();
-        if ($this->dispatchMethod == static::DISPATCH_METHOD_RANDOM) $players = ArrayMutator::shufflePreservingKeys($players);
+        $playersListMutator = new ArrayMutator($players);
+        if ($this->dispatchMethod == static::DISPATCH_METHOD_RANDOM) $players = $playersListMutator->shufflePreservingKeys();
         switch ($this->dispatchMethod) {
             case static::DISPATCH_METHOD_DEAL:
             case static::DISPATCH_METHOD_RANDOM:
             default:
-                $dispatch = ArrayMutator::deal($players, $groupCount);
+                $dispatch = $playersListMutator->deal($groupCount);
                 break;
         }
         return $dispatch;
