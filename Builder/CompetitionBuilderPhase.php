@@ -195,4 +195,23 @@ class CompetitionBuilderPhase
         return $sum;
     }
 
+
+    public function getQualificationSpots(): int
+    {
+        $sum = 0;
+        foreach ($this->getGroups() as $group) {
+            $sum += $group->getQualificationSpots();
+        }
+        return $sum;
+    }
+
+    public function getEliminationSpots(): int
+    {
+        $sum = 0;
+        foreach ($this->getGroups() as $group) {
+            $sum += $group->getEliminationSpots();
+        }
+        return $sum;
+    }
+
 }

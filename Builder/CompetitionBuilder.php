@@ -601,4 +601,14 @@ class CompetitionBuilder
         return $count;
     }
 
+    public function getQualificationSpots(): int
+    {
+        return $this->getOptionValue(static::OPTION_QUALIFICATION_SPOTS);
+    }
+
+    public function getEliminationSpots(): int
+    {
+        return $this->getOptionValue(static::OPTION_ELIMINATION_SPOTS);
+    }
+
 }
