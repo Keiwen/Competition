@@ -13,6 +13,7 @@ class CompetitionBuilderTree
     /** @var CompetitionBuilderPhase[] */
     protected $builderPhases = array();
     protected $iterations = array();
+    protected $expectedPlayersCount = 0;
 
     const PLAYER_PACK_QUALIFIED = 'qualified';
     const PLAYER_PACK_STAGNATION = 'stagnation';
@@ -130,5 +131,26 @@ class CompetitionBuilderTree
             static::PLAYER_PACK_STAGNATION,
         ];
     }
+
+
+    /**
+     * @return int
+     */
+    public function getExpectedPlayersCount(): int
+    {
+        return $this->expectedPlayersCount;
+    }
+
+    /**
+     * @param int $expectedPlayersCount
+     * @return $this
+     */
+    public function setExpectedPlayersCount(int $expectedPlayersCount): CompetitionBuilderTree
+    {
+        $this->expectedPlayersCount = $expectedPlayersCount;
+        return $this;
+    }
+
+
 
 }
