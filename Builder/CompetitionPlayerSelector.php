@@ -18,6 +18,7 @@ class CompetitionPlayerSelector
 
     CONST PICKUP_METHOD_BYGROUP = 'by_group';
     CONST PICKUP_METHOD_BYRANKINGROUP = 'by_rank_in_group';
+    CONST PICKUP_METHOD_BYRANKSHUFFLED = 'by_rank_shuffled';
     CONST PICKUP_METHOD_BYRANKINPHASE = 'by_rank_in_phase';
 
 
@@ -39,6 +40,7 @@ class CompetitionPlayerSelector
         return [
             static::PICKUP_METHOD_BYGROUP,
             static::PICKUP_METHOD_BYRANKINGROUP,
+            static::PICKUP_METHOD_BYRANKSHUFFLED,
             static::PICKUP_METHOD_BYRANKINPHASE,
         ];
     }
@@ -93,6 +95,7 @@ class CompetitionPlayerSelector
      * Use PICKUP_METHOD_* constants
      * PICKUP_METHOD_BYGROUP will pick all players from 1st group, all players from 2nd group, ...
      * PICKUP_METHOD_BYRANKINGROUP will pick all first players from all groups, then all 2nd players from all groups, ...
+     * PICKUP_METHOD_BYRANKSHUFFLED will pick all first players from all groups shuffled, then all 2nd players from all groups shuffled, ...
      * PICKUP_METHOD_BYRANKINPHASE will pick all players but mixing and re-ordering their rankings, ignoring original groups
      * @param string $pickupMethod
      * @return $this

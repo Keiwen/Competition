@@ -217,9 +217,14 @@ class CompetitionTree
                 // set parameters according to pickup method
                 $pickupByRank = false;
                 $pickupPhaseRanked = false;
+                $pickupByRankShuffled = true;
                 switch ($selector->getPickupMethod()) {
                     case CompetitionPlayerSelector::PICKUP_METHOD_BYRANKINGROUP:
                         $pickupByRank = true;
+                        break;
+                    case CompetitionPlayerSelector::PICKUP_METHOD_BYRANKSHUFFLED:
+                        $pickupByRank = true;
+                        $pickupByRankShuffled = true;
                         break;
                     case CompetitionPlayerSelector::PICKUP_METHOD_BYRANKINPHASE:
                         $pickupPhaseRanked = true;
@@ -233,11 +238,11 @@ class CompetitionTree
                 switch ($selector->getPlayerPackName()) {
                     case CompetitionBuilderTree::PLAYER_PACK_QUALIFIED:
                         // players in qualification spot for given phase
-                        $packKeys = $phase->getPlayerKeysForQualification($pickupByRank, $pickupPhaseRanked);
+                        $packKeys = $phase->getPlayerKeysForQualification($pickupByRank, $pickupPhaseRanked, $pickupByRankShuffled);
                         break;
                     case CompetitionBuilderTree::PLAYER_PACK_STAGNATION:
                         // players in stagnation spot (neither qualified nor eliminated) for given phase
-                        $packKeys = $phase->getPlayerKeysForStagnation($pickupByRank, $pickupPhaseRanked);
+                        $packKeys = $phase->getPlayerKeysForStagnation($pickupByRank, $pickupPhaseRanked, $pickupByRankShuffled);
                         break;
                     case CompetitionBuilderTree::PLAYER_PACK_UNUSED:
                         // players that did not participate in any phase yet
@@ -245,7 +250,7 @@ class CompetitionTree
                         break;
                     default:
                         // combination of unused players and previously qualified players
-                        $packKeys = array_merge(array_keys($this->unusedPlayers), $phase->getPlayerKeysForQualification($pickupByRank, $pickupPhaseRanked));
+                        $packKeys = array_merge(array_keys($this->unusedPlayers), $phase->getPlayerKeysForQualification($pickupByRank, $pickupPhaseRanked, $pickupByRankShuffled));
                         break;
                 }
             }

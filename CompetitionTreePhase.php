@@ -273,33 +273,36 @@ class CompetitionTreePhase
      * By default, you will have all players from 1st group, then all players for 2nd group, ...
      * @param bool $byRank set true to have all 1st players form all groups, then all 2nd players from all groups, ...
      * @param bool $phaseRanked set true to mix all rankings across any group and re-order accordingly
+     * @param bool $shuffleByRank set true while using byRank so shuffle all players than finished 1st, then shuffle all players 2nd, ...
      * @return int[]|string[]
      */
-    public function getPlayerKeysForQualification(bool $byRank = false, bool $phaseRanked = false): array
+    public function getPlayerKeysForQualification(bool $byRank = false, bool $phaseRanked = false, bool $shuffleByRank = false): array
     {
-        return $this->getPlayerKeysForSpot('qualification', $byRank, $phaseRanked);
+        return $this->getPlayerKeysForSpot('qualification', $byRank, $phaseRanked, $shuffleByRank);
     }
 
     /**
      * By default, you will have all players from 1st group, then all players for 2nd group, ...
      * @param bool $byRank set true to have all 1st players form all groups, then all 2nd players from all groups, ...
      * @param bool $phaseRanked set true to mix all rankings across any group and re-order accordingly
+     * @param bool $shuffleByRank set true while using byRank so shuffle all players than finished 1st, then shuffle all players 2nd, ...
      * @return int[]|string[]
      */
-    public function getPlayerKeysForStagnation(bool $byRank = false, bool $phaseRanked = false): array
+    public function getPlayerKeysForStagnation(bool $byRank = false, bool $phaseRanked = false, bool $shuffleByRank = false): array
     {
-        return $this->getPlayerKeysForSpot('stagnation', $byRank, $phaseRanked);
+        return $this->getPlayerKeysForSpot('stagnation', $byRank, $phaseRanked, $shuffleByRank);
     }
 
     /**
      * By default, you will have all players from 1st group, then all players for 2nd group, ...
      * @param bool $byRank set true to have all 1st players form all groups, then all 2nd players from all groups, ...
      * @param bool $phaseRanked set true to mix all rankings across any group and re-order accordingly
+     * @param bool $shuffleByRank set true while using byRank so shuffle all players than finished 1st, then shuffle all players 2nd, ...
      * @return int[]|string[]
      */
-    public function getPlayerKeysForElimination(bool $byRank = false, bool $phaseRanked = false): array
+    public function getPlayerKeysForElimination(bool $byRank = false, bool $phaseRanked = false, bool $shuffleByRank = false): array
     {
-        return $this->getPlayerKeysForSpot('elimination', $byRank, $phaseRanked);
+        return $this->getPlayerKeysForSpot('elimination', $byRank, $phaseRanked, $shuffleByRank);
     }
 
 
@@ -309,7 +312,7 @@ class CompetitionTreePhase
      * @param bool $phaseRanked
      * @return int[]|string[]
      */
-    protected function getPlayerKeysForSpot(string $spotType, bool $byRank = false, bool $phaseRanked = false): array
+    protected function getPlayerKeysForSpot(string $spotType, bool $byRank = false, bool $phaseRanked = false, bool $shuffleByRank = false): array
     {
         $playerKeys = array();
         $playerKeysByRank = array();
@@ -337,6 +340,8 @@ class CompetitionTreePhase
         if ($byRank) {
             // loop again on each rank and add rank by rank
             foreach ($playerKeysByRank as $index => $keysInRank) {
+                // shuffle the players in this rank if needed
+                if ($shuffleByRank) shuffle($keysInRank);
                 $playerKeys = array_merge($playerKeys, $keysInRank);
             }
         }
