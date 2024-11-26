@@ -46,8 +46,11 @@ class RankingsHolder
         foreach ($this->getExpenseTypesToRank() as $expenseType) {
             $duplicate->addExpenseTypeToRank($expenseType);
         }
+        foreach ($this->getStartingCapitals() as $expenseType => $startingCapital) {
+            $duplicate->setStartingCapitalForExpense($expenseType, $startingCapital);
+        }
+
         $duplicate->setPointsAttribution($this->getPointsByResult());
-        $duplicate->setStartingCapitals($this->getStartingCapitals());
         $duplicate->setPointsByBonus($this->getPointsByBonus());
         $duplicate->setPointsByMalus($this->getPointsByMalus());
         $duplicate->setPerfRankMethod($this->getPerfRankMethod());
