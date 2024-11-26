@@ -170,7 +170,10 @@ class CompetitionBuilderPhase
         $groupCount = count($this->builderGroups);
         $dispatch = array();
         $playersListMutator = new ArrayMutator($players);
-        if ($this->dispatchMethod == static::DISPATCH_METHOD_RANDOM) $players = $playersListMutator->shufflePreservingKeys();
+        if ($this->dispatchMethod == static::DISPATCH_METHOD_RANDOM) {
+            $players = $playersListMutator->shufflePreservingKeys();
+            $playersListMutator = new ArrayMutator($players);
+        }
         switch ($this->dispatchMethod) {
             case static::DISPATCH_METHOD_DEAL:
             case static::DISPATCH_METHOD_RANDOM:
