@@ -254,6 +254,16 @@ class CompetitionChampionshipDuel extends AbstractCompetition
         }
     }
 
+    public function getMaxGameCountByPlayer($playerKey = null): int
+    {
+        $baseCount = parent::getMaxGameCountByPlayer($playerKey);
+        if (Divisibility::isNumberOdd($this->playerCount)) {
+            // if odd number, each player play one game less that actual round number, for each series!
+            $baseCount -= $this->serieCount;
+        }
+        return $baseCount;
+    }
+
 
     public function getMaxPointForAGame(): int
     {
